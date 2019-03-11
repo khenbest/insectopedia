@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
@@ -16,8 +17,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/details',
-      name: 'details',
+      path: '/:id/notes',
+      name: 'notes',
+      props: true,
       component: BugDetails
     }
   ]
