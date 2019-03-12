@@ -40,19 +40,21 @@ export default new Vuex.Store({
           commit('setBugs', res.data.results)
         })
     },
-    createNote({ commit, dispatch }, payload) {
-      api.post('/id/notes')
+    createNote({ commit, dispatch }) {
+      let id = this.$store.state.activeBug
+      api.post(`${id}/notes`)
         .then(res => {
           debugger
-          console.log(payload)
-          dispatch('getNotes', payload)
+          console.log(res)
+          dispatch('getNotes')
         })
     },
-    getNotes({ commit, dispatch }, payload) {
-      api.get('/id/notes')
+    getNotes({ commit, dispatch }) {
+      let id = this.$store.state.activeBug
+      api.get(`${id}/notes`)
         .then(res => {
           console.log(res)
-          commit('getNotes', payload)
+          commit('getNotes')
         })
     },
     setId({ commit, dispatch }, payload) {

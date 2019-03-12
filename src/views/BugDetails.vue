@@ -5,16 +5,18 @@
       <div class="card-body">
         <h5 class="card-title">{{bug.creator}}</h5>
         <p class="card-text">{{bug.description}}</p>
-        <button class="btn btn-primary" v-on:click="showForm = !showForm">Add Notes</button>
+        <button class="btn btn-primary mb-4" v-on:click="showForm = !showForm">Add Notes</button>
         <span v-show="showForm">
           <form @submit.prevent="createNote">
             <input type="text" v-model="newNote.creator" placeholder="Name">
             <input type="text" v-model="newNote.content" placeholder="Note...">
+            <input type="text" v-model="newNote.user" placeholder="Your Name">
             <button type="submit">Submit Note</button>
           </form>
         </span>
       </div>
     </div>
+    <div class="row">{{newNote}}</div>
   </div>
 </template>
 
@@ -28,7 +30,7 @@ export default {
       newNote: {
         creator: "",
         content: "",
-        flagged: ""
+        user: ""
       }
     };
   },
