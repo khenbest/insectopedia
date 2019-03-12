@@ -20,6 +20,9 @@ export default new Vuex.Store({
     },
     setId(state, data) {
       state.activeBug = data
+    },
+    getNotes(state, data) {
+      state.notes = data
     }
   },
   actions: {
@@ -38,13 +41,19 @@ export default new Vuex.Store({
         })
     },
     createNote({ commit, dispatch }, payload) {
-      api.post(id + '/notes')
+      api.post('/id/notes')
         .then(res => {
+          debugger
+          console.log(payload)
           dispatch('getNotes', payload)
         })
     },
-    getNotes({ commit, dispatch }) {
-
+    getNotes({ commit, dispatch }, payload) {
+      api.get('/id/notes')
+        .then(res => {
+          console.log(res)
+          commit('getNotes', payload)
+        })
     },
     setId({ commit, dispatch }, payload) {
       commit('setId', payload)

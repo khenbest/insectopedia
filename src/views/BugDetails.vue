@@ -37,7 +37,11 @@ export default {
       return this.$store.state.bugs.find(b => b._id == this.id);
     }
   },
-  methods: {},
+  methods: {
+    createNote() {
+      this.$store.dispatch("createNote", this.newNote);
+    }
+  },
   components: {},
   mounted() {
     let id = this.$route.params.id;
