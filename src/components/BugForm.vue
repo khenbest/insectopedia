@@ -8,7 +8,7 @@
     </form>
     <div class="row d-flex">
       <div class="d-flex col-12 list-group" v-for="bug in bugs" :key="bug._id">
-        <router-link :to="{name: 'notes', params: {bugId:bug._id}}"
+        <router-link :to="{name: 'bug', params: {bugId:bug._id}}"
           class="list-group-item list-group-item-action list-group-item-warning">
           {{bug.creator}} {{bug.title}}
           {{bug.description}}
