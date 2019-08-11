@@ -8,7 +8,7 @@
           <p class="card-text">{{activeBug.description}}
           </p>
         </div>
-        <div class="card-footer bg-transparent border-dark">Last Updated: {{activeBug.updatedAt}}</div>
+        <!-- <div class="card-footer bg-transparent border-dark">Last Updated: {{activeBug.updatedAt}}</div> -->
         <button class="btn btn-primary" v-on:click="showForm = !showForm">Add Note</button>
       </div>
     </div>
@@ -19,8 +19,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-default">Your Name</span>
             </div>
-            <input v-model="newNote.creator" type="text" class="form-control" aria-label="Sizing example input"
-              aria-describedby="inputGroup-sizing-default">
+            <span class="form-control">{{user.name}}</span>
           </div>
           <div class="input-group mb-3">
             <input type="text" v-model="newNote.content" class="form-control" placeholder="Content" aria-label="Content"
@@ -29,9 +28,7 @@
               <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Submit Note</button>
             </div>
           </div>
-          <!-- <input type="text" placeholder="Your Name" v-model="newNote.creator">
-          <textarea type="text-area" placeholder="Content" v-model="newNote.content"></textarea>
-          <button type="submit">Submit Note</button> -->
+
         </form>
       </span>
     </div>
@@ -42,29 +39,31 @@
 <script>
   import Note from '@/components/Note.vue'
   export default {
-    name: "activeBug",
-    props: ["bugId"],
+    name: "ActiveBug",
+    props: ["bugId", "user"],
     mounted() {
-      this.$store.dispatch('setActiveBug', this.bugId || this._id)
-
+      this.$store.dispatch("setActiveBug", this.$route.params.bugId)
     },
     data() {
       return {
         showForm: false,
         newNote: {
+          bugId: this.$route.params.bugId,
           content: '',
-          creator: ''
         }
       }
     },
     computed: {
       activeBug() {
         return this.$store.state.activeBug
-      }
+      },
+
+
     },
     methods: {
       addNote() {
-        this.$store.dispatch('createNote', this.newNote)
+        this.newNote.creator = this.user.name,
+          this.$store.dispatch('createNote', this.newNote)
       }
     },
     components: {

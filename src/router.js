@@ -3,6 +3,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import ActiveBug from './views/ActiveBug.vue'
+import BugLog from './views/BugLog.vue'
+
 import Note from './components/Note.vue'
 
 
@@ -17,16 +19,17 @@ export default new Router({
       component: Home
     },
     {
+      path: '/bug-log',
+      name: 'BugLog',
+      props: true,
+      component: BugLog
+    },
+    {
       path: '/:bugId',
-      name: 'bug',
+      name: 'ActiveBug',
       props: true,
       component: ActiveBug
     },
-    {
-      path: '/:bugId/notes',
-      name: 'notes',
-      props: true,
-      component: Note
-    }
+
   ]
 })

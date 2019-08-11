@@ -1,14 +1,12 @@
 <template>
-  <div id="app">
+  <div id="app" class="bg-dark vh-100">
     <router-view />
   </div>
 </template>
 
 <script>
   export default {
-    mounted() {
-      this.$store.dispatch('getAllBugs')
-    }
+
   }
 
 </script>
