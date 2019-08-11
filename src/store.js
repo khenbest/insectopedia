@@ -36,7 +36,7 @@ export default new Vuex.Store({
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
           commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
-          router.push({ name: 'BugLog', params: { uid: user.uid } })
+          router.push({ name: 'BugLog', params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } } })
         }
         else {
           dispatch('logout')
@@ -59,8 +59,7 @@ export default new Vuex.Store({
       const github = new firebase.auth.GithubAuthProvider()
       firebase.auth().signInWithPopup(github)
         .then(res => {
-          console.log(res.user)
-          commit('setUser', res.user)
+          commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
           router.push({
             name: 'BugLog',
             params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } }
@@ -68,10 +67,10 @@ export default new Vuex.Store({
         }).catch(e => console.error(e))
     },
     emailLogin({ commit }, user) {
-      firebase.auth().signInAndRetrieveDataWithEmailAndPassword(user.email, user.password)
+      firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then(res => {
-          commit('setUser', res.user)
-          router.push({ name: 'BugLog', params: { uid: res.user.uid } })
+          commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
+          router.push({ name: 'BugLog', params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } } })
         })
         .catch(e => console.error(e))
     },
@@ -117,7 +116,6 @@ export default new Vuex.Store({
       db.doc('bugs/' + bugId).get()
         .then(snap => {
           commit('setActiveBug', snap.data())
-          router.push({ name: 'ActiveBug', params: { bugId: bugId } })
         }).catch(e => console.log(e))
     },
     editBugStatus({ commit, dispatch }, payload) {
