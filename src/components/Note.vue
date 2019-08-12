@@ -6,7 +6,7 @@
             <div class="card-body text-primary">
                <h5 class="card-title">{{note.content}}</h5>
             </div>
-            <div class="card-footer bg-transparent border-dark">Last Updated: {{note.updatedAt}}</div>
+            <!-- <div class="card-footer bg-transparent border-dark">Last Updated: {{note.updatedAt}}</div> -->
             <button class="btn btn-danger" @click="deleteNote(note)">Delete Note</button>
          </div>
       </div>
@@ -22,7 +22,7 @@
       },
       computed: {
          notes() {
-            return this.$store.state.notes;
+            return this.$store.state.notes[this.$route.params.bugId] || [];
          }
       },
       methods: {

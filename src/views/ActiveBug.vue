@@ -61,7 +61,7 @@
     },
     methods: {
       addNote() {
-        (this.newNote.creator = this.user.name),
+        this.newNote.creator = this.user.name,
           this.$store.dispatch("createNote", this.newNote);
       }
     },

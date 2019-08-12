@@ -14,7 +14,8 @@ export default new Vuex.Store({
     user: {},
     bugs: [],
     activeBug: {},
-    notes: []
+    notes: [],
+    observers: () => { }
   },
   mutations: {
     setUser(state, data) {
@@ -27,7 +28,12 @@ export default new Vuex.Store({
       state.activeBug = data
     },
     setNotes(state, data) {
-      state.notes = data
+      debugger
+      Vue.set(state.notes, data.bugId, data.notes)
+    },
+    setObservers(state, data) {
+      state.observers()
+      state.observers = data
     }
   },
   actions: {
@@ -100,12 +106,12 @@ export default new Vuex.Store({
         }).catch(e => console.log(e))
     },
     setActiveBug({ commit, dispatch }, bugId) {
-      db.doc('bugs/' + bugId).get()
-        .then(snap => {
-          console.log(snap.data())
+      commit('setObservers',
+        db.doc('bugs/' + bugId).onSnapshot(snap => {
           commit('setActiveBug', snap.data())
           router.push({ name: 'ActiveBug', params: { bugId: bugId } })
-        }).catch(e => console.log(e))
+        }))
+      dispatch('getNotes', bugId)
     },
     editBugStatus({ commit, dispatch }, payload) {
       db.doc('bugs/' + payload.id).update({ status: payload.status })
@@ -123,38 +129,26 @@ export default new Vuex.Store({
     //#endregion --Bugs--
 
     //#region  -- Notes --
+    getNotes({ commit }, payload) {
+      commit('setObservers', db.collection('bugs/' + payload + '/notes').onSnapshot(snap => {
+        let notes = []
+        snap.forEach(doc => { notes.push({ ...doc.data(), id: doc.id }) })
+        commit('setNotes', { notes, bugId: payload })
+      }))
+    },
     createNote({ dispatch }, payload) {
       db.collection('bugs/' + payload.bugId + '/notes').add(payload)
         .then(() => {
           dispatch('getNotes', payload.bugId)
         }).catch(e => console.log(e))
     },
-    getNotes({ commit }, payload) {
-      db.collection('bugs/' + payload + '/notes').get()
-        .then(snap => {
-          let notes = []
-          snap.forEach(doc => {
-            let note = doc.data()
-            note.id = doc.id
-            notes.push(note)
-          })
-          commit('setNotes', notes)
-        }).catch(e => console.log(e))
-    },
+
     deleteNote({ dispatch }, payload) {
-      db.doc('bugs/' + payload.bugId + '/notes' + payload.id).delete()
+      db.collection('bugs').doc(payload.bugId).collection('notes').doc(payload.id).delete()
         .then(() => {
           dispatch('getNotes', payload.bugId)
         }).catch(e => console.log(e))
     },
-    //NEED TO LEARN HOW TO KILL OBSERVERS BEFORE IMPLEMENTATION
-    //    getNotes({ commit }, payload) {
-    //   db.collection('bugs/' + payload + '/notes').onSnapshot(snap => {
-    //     let notes = []
-    //     snap.forEach(doc => { notes.push({ ...doc.data(), id: doc.id }) })
-    //     commit('setNotes', notes)
-    //   }).catch(e => console.log(e))
-    // }
     //#endregion  -- Notes --
 
   },
