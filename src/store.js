@@ -32,26 +32,14 @@ export default new Vuex.Store({
   },
   actions: {
     //#region --AUTH--
-    authenticate({ commit, dispatch }) {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
-          router.push({ name: 'BugLog', params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } } })
-        }
-        else {
-          dispatch('logout')
-        }
-      }).catch(e => console.error(e))
-    },
     googleLogin({ commit }) {
       const google = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(google)
         .then(res => {
-          console.log(res.user)
           commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
           router.push({
             name: 'BugLog',
-            params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } }
+
           })
         }).catch(e => console.error(e))
     },
@@ -61,8 +49,7 @@ export default new Vuex.Store({
         .then(res => {
           commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
           router.push({
-            name: 'BugLog',
-            params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } }
+            name: 'BugLog'
           })
         }).catch(e => console.error(e))
     },
@@ -70,7 +57,7 @@ export default new Vuex.Store({
       firebase.auth().signInWithEmailAndPassword(user.email, user.password)
         .then(res => {
           commit('setUser', { uid: res.user.uid, name: res.user.displayName, email: res.user.email })
-          router.push({ name: 'BugLog', params: { user: { uid: res.user.uid, name: res.user.displayName, email: res.user.email } } })
+          router.push({ name: 'BugLog' })
         })
         .catch(e => console.error(e))
     },
@@ -115,7 +102,9 @@ export default new Vuex.Store({
     setActiveBug({ commit, dispatch }, bugId) {
       db.doc('bugs/' + bugId).get()
         .then(snap => {
+          console.log(snap.data())
           commit('setActiveBug', snap.data())
+          router.push({ name: 'ActiveBug', params: { bugId: bugId } })
         }).catch(e => console.log(e))
     },
     editBugStatus({ commit, dispatch }, payload) {
@@ -143,16 +132,29 @@ export default new Vuex.Store({
     getNotes({ commit }, payload) {
       db.collection('bugs/' + payload + '/notes').get()
         .then(snap => {
-          console.log(snap)
           let notes = []
-          snap.docs().forEach(doc => {
+          snap.forEach(doc => {
             let note = doc.data()
             note.id = doc.id
             notes.push(note)
           })
           commit('setNotes', notes)
         }).catch(e => console.log(e))
-    }
+    },
+    deleteNote({ dispatch }, payload) {
+      db.doc('bugs/' + payload.bugId + '/notes' + payload.id).delete()
+        .then(() => {
+          dispatch('getNotes', payload.bugId)
+        }).catch(e => console.log(e))
+    },
+    //NEED TO LEARN HOW TO KILL OBSERVERS BEFORE IMPLEMENTATION
+    //    getNotes({ commit }, payload) {
+    //   db.collection('bugs/' + payload + '/notes').onSnapshot(snap => {
+    //     let notes = []
+    //     snap.forEach(doc => { notes.push({ ...doc.data(), id: doc.id }) })
+    //     commit('setNotes', notes)
+    //   }).catch(e => console.log(e))
+    // }
     //#endregion  -- Notes --
 
   },

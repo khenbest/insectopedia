@@ -15,34 +15,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="bug in bugs"
-            scope="row"
-            id="bugRowItem"
-            @click="setActiveBug(bug.id)"
-            :user="$store.getters.AuthorCreds"
-          >
-            <td>{{bug.title}}</td>
-            <td>{{bug.description}}</td>
-            <td>{{bug.creator}}</td>
+          <tr v-for="bug in bugs" scope="row" id="bugRowItem">
+            <td @click="setActiveBug(bug.id)">{{bug.title}}</td>
+            <td @click="setActiveBug(bug.id)">{{bug.description}}</td>
+            <td @click="setActiveBug(bug.id)">{{bug.creator}}</td>
             <td class="dropdown">
               {{bug.status}}
-              <button
-                class="btn btn-sm btn-outline-light dropdown-toggle"
-                type="button"
-                data-toggle="dropdown"
-              ></button>
+              <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button"
+                data-toggle="dropdown"></button>
               <div class="dropdown-menu">
-                <p @click="editStatus(bug.id, 'closed')" class="dropdown-item">Closed</p>
-                <p @click="editStatus(bug.id, 'open')" class="dropdown-item">Re-Open</p>
+                <p v-if="bug.status == 'open'" @click="editStatus(bug.id, 'closed')" class="dropdown-item">Close</p>
+                <p v-if="bug.status == 'closed'" @click="editStatus(bug.id, 'open')" class="dropdown-item">Re-Open</p>
               </div>
             </td>
             <td>
-              <button
-                @click="deleteBug(bug.id)"
-                class="btn d-flex row align-self-flex-end"
-                style="color:red;"
-              >X</button>
+              <button @click="deleteBug(bug.id)" class="btn d-flex row align-self-flex-end"
+                style="color:red;">X</button>
             </td>
           </tr>
         </tbody>
@@ -52,45 +40,44 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import BugForm from "@/components/BugForm.vue";
-export default {
-  name: "BugLog",
-  props: ["user"],
-  data() {
-    return {};
-  },
-  mounted() {
-    this.$store.dispatch("getAllBugs");
-  },
-  computed: {
-    bugs() {
-      return this.$store.state.bugs;
+  // @ is an alias to /src
+  import BugForm from "@/components/BugForm.vue";
+  export default {
+    name: "BugLog",
+    data() {
+      return {};
+    },
+    mounted() {
+      this.$store.dispatch("getAllBugs");
+    },
+    computed: {
+      bugs() {
+        return this.$store.state.bugs;
+      }
+    },
+    components: {
+      BugForm
+    },
+    methods: {
+      setActiveBug(id) {
+        this.$store.dispatch("setActiveBug", id);
+      },
+      editStatus(id, status) {
+        let payload = { id: id, status: status };
+        this.$store.dispatch("editBugStatus", payload);
+      },
+      deleteBug(bugId) {
+        this.$store.dispatch("deleteBug", bugId);
+      },
+      logout() {
+        this.$store.dispatch("logout");
+      }
     }
-  },
-  components: {
-    BugForm
-  },
-  methods: {
-    setActiveBug(id) {
-      this.$store.dispatch("setActiveBug", id);
-    },
-    editStatus(id, status) {
-      let payload = { id: id, status: status };
-      this.$store.dispatch("editBugStatus", payload);
-    },
-    deleteBug(bugId) {
-      this.$store.dispatch("deleteBug", bugId);
-    },
-    logout() {
-      this.$store.dispatch("logout");
-    }
-  }
-};
+  };
 </script>
 
 <style>
-#bugRowItem:hover {
-  cursor: pointer;
-}
+  #bugRowItem:hover {
+    cursor: pointer;
+  }
 </style>

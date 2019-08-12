@@ -21,14 +21,8 @@
             <span class="form-control">{{user.name}}</span>
           </div>
           <div class="input-group mb-3">
-            <input
-              type="text"
-              v-model="newNote.content"
-              class="form-control"
-              placeholder="Content"
-              aria-label="Content"
-              aria-describedby="button-addon2"
-            />
+            <input type="text" v-model="newNote.content" class="form-control" placeholder="Content" aria-label="Content"
+              aria-describedby="button-addon2" />
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Submit Note</button>
             </div>
@@ -36,40 +30,43 @@
         </form>
       </span>
     </div>
-    <note></note>
+    <Note></Note>
   </div>
 </template>
 
 <script>
-import Note from "@/components/Note.vue";
-export default {
-  name: "ActiveBug",
-  props: ["bugId", "user"],
-  mounted() {
-    this.$store.dispatch("setActiveBug", this.bugId);
-  },
-  data() {
-    return {
-      showForm: false,
-      newNote: {
-        bugId: this.bugId,
-        content: ""
+  import Note from "@/components/Note.vue";
+  export default {
+    name: "ActiveBug",
+    props: ["bugId"],
+    mounted() {
+      this.$store.dispatch("setActiveBug", this.bugId);
+    },
+    data() {
+      return {
+        showForm: false,
+        newNote: {
+          bugId: this.bugId,
+          content: ""
+        }
+      };
+    },
+    computed: {
+      activeBug() {
+        return this.$store.state.activeBug;
+      },
+      user() {
+        return this.$store.state.user
       }
-    };
-  },
-  computed: {
-    activeBug() {
-      return this.$store.state.activeBug;
+    },
+    methods: {
+      addNote() {
+        (this.newNote.creator = this.user.name),
+          this.$store.dispatch("createNote", this.newNote);
+      }
+    },
+    components: {
+      Note
     }
-  },
-  methods: {
-    addNote() {
-      (this.newNote.creator = this.user.name),
-        this.$store.dispatch("createNote", this.newNote);
-    }
-  },
-  components: {
-    Note
-  }
-};
+  };
 </script>
