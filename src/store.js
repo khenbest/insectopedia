@@ -28,7 +28,6 @@ export default new Vuex.Store({
       state.activeBug = data
     },
     setNotes(state, data) {
-      debugger
       Vue.set(state.notes, data.bugId, data.notes)
     },
     setObservers(state, data) {
@@ -106,12 +105,13 @@ export default new Vuex.Store({
         }).catch(e => console.log(e))
     },
     setActiveBug({ commit, dispatch }, bugId) {
-      commit('setObservers',
-        db.doc('bugs/' + bugId).onSnapshot(snap => {
+      db.doc('bugs/' + bugId).get()
+        .then(snap => {
+          console.log(snap.data())
           commit('setActiveBug', snap.data())
+          dispatch('getNotes', bugId)
           router.push({ name: 'ActiveBug', params: { bugId: bugId } })
-        }))
-      dispatch('getNotes', bugId)
+        }).catch(e => console.log(e))
     },
     editBugStatus({ commit, dispatch }, payload) {
       db.doc('bugs/' + payload.id).update({ status: payload.status })
